@@ -19,7 +19,7 @@ jobs:
           cache: pip
           cache-dependency-path: backend/requirements.txt
       - run: pip install flake8
-      - run: flake8 backend --max-line-length=120 --exclude=.venv,venv,migrations
+      - run: flake8 backend --max-line-length=120 --exclude=.venv,backend/.venv,venv,migrations
 
   build-backend:
     needs: lint-backend
