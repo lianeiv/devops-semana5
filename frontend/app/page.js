@@ -1,16 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+import { getData } from "../lib/dataSource";
 
 export default function Home() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch("/api/health/")
-      .then((r) => {
-        if (!r.ok) throw new Error(String(r.status));
-        return r.json();
-      })
+    getData()
       .then(setData)
       .catch(() => setError(true));
   }, []);
