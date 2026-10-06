@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../lib/firebase"; // Ajuste o caminho se necessário para onde inicializou o firebase/firestore
+import { db } from "../lib/firebase"; 
 
 interface Item {
   id: string;
@@ -29,7 +29,7 @@ export default function Home() {
             ordem: data.ordem,
           });
         });
-        // Ordena por ordem crescente se desejar
+
         fetchedItems.sort((a, b) => a.ordem - b.ordem);
         setItems(fetchedItems);
       } catch (err: any) {
