@@ -2,29 +2,49 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../lib/firebase"; // Ajuste o caminho se necessário para onde inicializou o firebase/firestore
 
-interface HealthData {
-  status: string;
-  items?: string[];
+interface Item {
+  id: string;
+  titulo: string;
+  ordem: number;
 }
 
 export default function Home() {
-  const [data, setData] = useState<HealthData | null>(null);
+  const [items, setItems] = useState<Item[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/health/")
-      .then((r) => {
-        if (!r.ok) throw new Error(String(r.status));
-        return r.json();
-      })
-      .then(setData)
-      .catch((e) => setError(e.message));
+    async function fetchItems() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "items"));
+        const fetchedItems: Item[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          fetchedItems.push({
+            id: doc.id,
+            titulo: data.titulo,
+            ordem: data.ordem,
+          });
+        });
+        // Ordena por ordem crescente se desejar
+        fetchedItems.sort((a, b) => a.ordem - b.ordem);
+        setItems(fetchedItems);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchItems();
   }, []);
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black min-h-screen p-8">
+      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-16 px-8 bg-white dark:bg-black sm:items-start border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm">
         <Image
           className="dark:invert h-5 w-[100px]"
           src="/next.svg"
@@ -34,52 +54,26 @@ export default function Home() {
           priority
         />
         
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            Status do Backend:
+        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left w-full my-8">
+          <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
+            Painel Semana 5 - Itens do Firestore
           </h1>
 
           {error && (
-            <p className="text-red-500 font-medium">Erro ao carregar: {error}</p>
+            <p className="text-red-500 font-medium" role="alert">Erro ao carregar: {error}</p>
           )}
 
-          <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            {data ? `Status: ${data.status}` : "Carregando..."}
-          </p>
+          {loading && <p className="text-zinc-600 dark:text-zinc-400">Carregando...</p>}
 
-          {data?.items && (
-            <ul className="list-disc pl-5">
-              {data.items.map((i: string) => (
-                <li key={i}>{i}</li>
+          {!loading && !error && (
+            <ul className="list-disc pl-5 flex flex-col gap-2 text-lg text-zinc-700 dark:text-zinc-300">
+              {items.map((item) => (
+                <li key={item.id}>
+                  <strong className="text-black dark:text-white">{item.ordem}.</strong> {item.titulo}
+                </li>
               ))}
             </ul>
           )}
-        </div>
-
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
         </div>
       </main>
     </div>
