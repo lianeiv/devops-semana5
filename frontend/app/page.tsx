@@ -32,8 +32,12 @@ export default function Home() {
 
         fetchedItems.sort((a, b) => a.ordem - b.ordem);
         setItems(fetchedItems);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("Ocorreu um erro desconhecido");
+        }
       } finally {
         setLoading(false);
       }
