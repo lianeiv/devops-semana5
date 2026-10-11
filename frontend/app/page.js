@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <main>
-      <h1>Painel Semana 6 - Versão B</h1>
+      <h1 style={{ color: "#ec4899" }}>Painel Semana 6 - Versão B</h1>
       {error && (
         <p role="alert">Dados indisponíveis no momento. Tente novamente mais tarde.</p>
       )}
@@ -23,8 +23,8 @@ export default function Home() {
         <>
           <h2>Status: {data.status}</h2>
           <ul>
-            {data.items.map((i) => (
-              <li key={i}>{i}</li>
+            {[...data.items].reverse().map((item) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
         </>
@@ -32,5 +32,3 @@ export default function Home() {
     </main>
   );
 }
-
-<h1>Painel Semana 6 - Versão B - Versão B</h1>
