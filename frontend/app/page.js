@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <main>
-      <h1>Painel Semana 5</h1>
+      <h1>Painel Semana 6 - Versão B</h1>
       {error && (
         <p role="alert">Dados indisponíveis no momento. Tente novamente mais tarde.</p>
       )}
@@ -33,4 +33,4 @@ export default function Home() {
   );
 }
 
-<h1>Painel Semana 5 - Versão B</h1>
+<h1>Painel Semana 6 - Versão B - Versão B</h1>
